@@ -4,6 +4,5 @@ namespace ChatBot.Core.Models
 {
     public sealed class User : IdentityUser
     {
-
     }
 }
