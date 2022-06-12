@@ -46,6 +46,7 @@ export class LoginComponent implements OnInit {
       this.authService.doLogin( loginRequest).subscribe({
         next: (response: any) => {
           localStorage.setItem("token", response.token);
+          this.router.navigateByUrl('/chatroom');
           this.notificationService.closeLoading();
         },
         error: async err => {

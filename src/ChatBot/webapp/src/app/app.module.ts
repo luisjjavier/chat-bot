@@ -2,6 +2,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { JwtModule } from '@auth0/angular-jwt';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,6 +12,12 @@ import { AccountLayoutComponent } from './layouts/account-layout/account-layout.
 import { AuthorizeLayoutComponent } from './layouts/authorize-layout/authorize-layout.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
+import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
+
+
+function tokenGetter() {
+  return localStorage.getItem('token');
+}
 
 @NgModule({
   declarations: [
@@ -19,7 +26,8 @@ import { LoginComponent } from './pages/login/login.component';
     AccountLayoutComponent,
     AuthorizeLayoutComponent,
     RegisterComponent,
-    LoginComponent
+    LoginComponent,
+    ChatRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -27,7 +35,12 @@ import { LoginComponent } from './pages/login/login.component';
     NgbModule,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter
+      }
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
