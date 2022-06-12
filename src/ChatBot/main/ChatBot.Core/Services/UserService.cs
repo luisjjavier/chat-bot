@@ -1,5 +1,4 @@
-﻿using ChatBot.Core.Boundaries.Persistence;
-using ChatBot.Core.Models;
+﻿using ChatBot.Core.Models;
 using ChatBot.Core.Services.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Triplex.Validations;
@@ -20,7 +19,13 @@ namespace ChatBot.Core.Services
             Arguments.NotNull(user, nameof(user));
             Arguments.NotNull(password, nameof(password));
 
-           await _userManager.CreateAsync(user, password);
+          var result =  await _userManager.CreateAsync(user, password);
+
+          if (!result.Succeeded)
+          {
+              throw new InvalidOperationException(
+                  string.Join(",", result.Errors.Select( e=> e.Description)));
+          }
         }
     }
 }

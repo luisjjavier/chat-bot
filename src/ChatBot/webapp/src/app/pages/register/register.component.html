@@ -1,0 +1,37 @@
+<div class="card">
+  <div class="card-body text-center">
+    <h1 class="card-title">Try to register</h1>
+
+    <form [formGroup]="registerForm" autocomplete="off" novalidate (ngSubmit)="onRegister(registerForm.value)">
+      <div class="form-group">
+        <input type="text" id="userName" formControlName="userName" class="form-control" placeholder="Username" />
+        <span class="text-danger" *ngIf="validateControl('userName') && hasError('userName', 'required')">
+                    Username is required
+                </span>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="password" formControlName="password" class="form-control" placeholder="Password" />
+        <span class="text-danger" *ngIf="validateControl('password') && hasError('password', 'required')">
+                    Password is required
+                </span>
+      </div>
+
+      <div class="form-group">
+        <input type="password" id="confirm" formControlName="confirm" class="form-control" placeholder="Confirm Password" />
+        <span class="text-danger" *ngIf="validateControl('confirm') && hasError('confirm', 'required')">
+                    Confirm Password is required
+                </span>
+      </div>
+      <br>
+      <div class="form-group row">
+        <div class="col-12">
+          <button type="submit" class="btn btn-info" [disabled]="!registerForm.valid">Register</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="card-footer text-muted">
+    <button type="button" class="btn btn-link" (click)="goToLogin()">Login</button>
+  </div>
+</div>

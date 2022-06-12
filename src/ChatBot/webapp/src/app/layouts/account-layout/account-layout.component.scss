@@ -1,0 +1,40 @@
+.textbox-party {
+  background-color: #fff;
+  border: 1px solid #622f73;
+  opacity: 1 !important;
+}
+
+.responsive-mobile {
+  margin-bottom: 0px !important;
+}
+
+.card-size {
+  width: 40vw;
+  margin-top: 10rem;
+}
+
+@media (min-width: 320px) and (max-width: 480px) {
+  .responsive-mobile {
+    padding-right: 0px;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .card-size {
+    width: 85vw !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-size {
+    width: 65vw !important;
+  }
+}
+
+@media (min-width: 1440px) {
+  .card-size {
+    max-width: 30vw !important;
+  }
+}

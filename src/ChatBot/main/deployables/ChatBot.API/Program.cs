@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using ChatBot.API.ExceptionHandler;
 using ChatBot.API.Models;
 using ChatBot.Core.Boundaries.Persistence;
 using ChatBot.Core.Models;
@@ -18,7 +19,7 @@ namespace ChatBot.API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            var apiSettings = builder.Configuration.GetSection("AppSettings").Get<ApiSettings>();
+            var apiSettings = builder.Configuration.GetSection("ApiSettings").Get<ApiSettings>();
             // Add services to the container.
             AddDbContext(builder.Services, builder.Configuration);
             RegisterServices(builder.Services);
@@ -59,6 +60,8 @@ namespace ChatBot.API
 
             var app = builder.Build();
 
+            app.UseCors();
+            app.ConfigureExceptionHandler();
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
