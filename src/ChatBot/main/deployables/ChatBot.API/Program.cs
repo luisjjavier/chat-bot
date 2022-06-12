@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Text;
 using ChatBot.API.ExceptionHandler;
 using ChatBot.API.Models;
 using ChatBot.Core.Boundaries.Persistence;
@@ -7,8 +8,12 @@ using ChatBot.Core.Services;
 using ChatBot.Core.Services.Contracts;
 using ChatBot.Persistence;
 using ChatBot.Persistence.Repositories;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.OpenApi.Models;
 
 namespace ChatBot.API
 {
@@ -20,24 +25,14 @@ namespace ChatBot.API
             var builder = WebApplication.CreateBuilder(args);
 
             var apiSettings = builder.Configuration.GetSection("ApiSettings").Get<ApiSettings>();
+            var jwtSettings = builder.Configuration.GetSection("JWTSettings").Get<JwtSettings>();
+            builder.Services.AddScoped((_) => jwtSettings);
             // Add services to the container.
             AddDbContext(builder.Services, builder.Configuration);
             RegisterServices(builder.Services);
             RegisterRepositories(builder.Services);
-
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(cors =>
-                {
-                    cors
-                        .AllowAnyHeader()
-                        .AllowAnyMethod()
-                        .AllowCredentials()
-                        .AllowAnyOrigin()
-                        .WithOrigins(apiSettings.ClientUrls.ToArray());
-                });
-            });
+            ConfigureJwt(builder.Services, jwtSettings);
+            builder.Services.AddCors(AddDefaultCors(apiSettings));
 
 
             builder.Services.AddIdentity<User, IdentityRole>(o => {
@@ -55,7 +50,44 @@ namespace ChatBot.API
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Chat bot",
+                    Version = "v1",
+                    Description = "Chat bot APO",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Luis Javier",
+                        Email = "javier.luis29@gmail.com"
+                    }
+                });
+
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "JWT Authentication",
+                    Description = "Enter JWT Bearer token **_only_**",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT",
+                    Reference = new OpenApiReference
+                    {
+                        Id = JwtBearerDefaults.AuthenticationScheme,
+                        Type = ReferenceType.SecurityScheme
+                    }
+                };
+                c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {securityScheme, Array.Empty<string>()}
+                });
+
+                var xmlFile = $"{typeof(Program).Assembly.GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
             
 
             var app = builder.Build();
@@ -70,12 +102,29 @@ namespace ChatBot.API
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
 
             app.Run();
+        }
+
+        private static Action<CorsOptions> AddDefaultCors(ApiSettings apiSettings)
+        {
+
+            return options =>
+            {
+                options.AddDefaultPolicy(cors =>
+                {
+                    cors
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .AllowAnyOrigin()
+                        .WithOrigins(apiSettings.ClientUrls.ToArray());
+                });
+            };
         }
 
         private static void AddDbContext( IServiceCollection services, ConfigurationManager configuration)
@@ -96,12 +145,35 @@ namespace ChatBot.API
 
         private static void RegisterServices(IServiceCollection  services)
         {
+            
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<ITokenHandler, JwtTokenHandler>();
         }
 
         private static void RegisterRepositories(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+        }
+        private static void ConfigureJwt(IServiceCollection services, JwtSettings jwtSettings)
+        {
+            services.AddAuthentication(opt =>
+            {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+
+                    ValidIssuer = jwtSettings.ValidIssuer,
+                    ValidAudience = jwtSettings.ValidIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey))
+                };
+            });
         }
     }
 }

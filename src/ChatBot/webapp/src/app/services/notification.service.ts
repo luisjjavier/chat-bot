@@ -51,8 +51,8 @@ export class NotificationService {
     });
   }
 
-  async showLoading() {
-    await Swal.fire({
+   showLoading() {
+     Swal.fire({
       allowOutsideClick: false,
       showConfirmButton: false,
       didOpen(popup: HTMLElement) {

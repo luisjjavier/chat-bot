@@ -5,7 +5,7 @@ using Triplex.Validations;
 
 namespace ChatBot.Core.Services
 {
-    public sealed class UserService: IUserService
+    public sealed class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
 
@@ -19,13 +19,24 @@ namespace ChatBot.Core.Services
             Arguments.NotNull(user, nameof(user));
             Arguments.NotNull(password, nameof(password));
 
-          var result =  await _userManager.CreateAsync(user, password);
+            var result = await _userManager.CreateAsync(user, password);
 
-          if (!result.Succeeded)
-          {
-              throw new InvalidOperationException(
-                  string.Join(",", result.Errors.Select( e=> e.Description)));
-          }
+            if (!result.Succeeded)
+            {
+                throw new InvalidOperationException(
+                    string.Join(",", result.Errors.Select(e => e.Description)));
+            }
+        }
+
+        public async Task<User> LoginAsync(LoginRequest loginRequest)
+        {
+            Arguments.NotNull(loginRequest, nameof(loginRequest));
+
+            var user = Arguments.NotNull(await _userManager.FindByNameAsync(loginRequest.UserName), nameof(loginRequest), "Invalid user or password");
+            bool isValidPassword = await _userManager.CheckPasswordAsync(user, loginRequest.Password);
+            Arguments.CompliesWith(isValidPassword, "Invalid user or password", "Invalid user or password");
+
+            return user;
         }
     }
 }

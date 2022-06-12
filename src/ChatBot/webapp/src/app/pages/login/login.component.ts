@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { LoginRequest } from '../../models/login-request';
+import { AuthService } from '../../services/auth.service';
+import { NotificationService } from '../../services/notification.service';
 
 @Component({
   selector: 'app-login',
@@ -9,7 +12,9 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  constructor(private readonly router: Router) {
+  constructor(private readonly router: Router,
+  private readonly notificationService: NotificationService,
+  private readonly authService: AuthService) {
     this.loginForm = this.buildForm()
   }
 
@@ -33,6 +38,19 @@ export class LoginComponent implements OnInit {
     this.router.navigateByUrl('/register');
   }
   onLogin(login: any) {
-
+      this.notificationService.showLoading();
+      const loginRequest: LoginRequest = {
+        userName: login.userName,
+        password: login.password
+      }
+      this.authService.doLogin( loginRequest).subscribe({
+        next: (response: any) => {
+          localStorage.setItem("token", response.token);
+          this.notificationService.closeLoading();
+        },
+        error: async err => {
+          await this.notificationService.showErrorMessage(err.error.error);
+        }
+      })
   }
 }

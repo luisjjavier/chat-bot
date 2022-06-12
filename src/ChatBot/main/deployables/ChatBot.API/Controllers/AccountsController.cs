@@ -12,11 +12,13 @@ namespace ChatBot.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IUserService _userService;
+        private readonly ITokenHandler _tokenHandler;
 
-        public AccountsController(IUserService userService, IMapper mapper)
+        public AccountsController(IUserService userService,ITokenHandler tokenHandler, IMapper mapper)
         {
             _mapper = mapper;
             _userService = userService;
+            _tokenHandler = tokenHandler;
         }
 
         [HttpPost("register")]
@@ -26,6 +28,18 @@ namespace ChatBot.API.Controllers
             await _userService.RegisterAUser(user, registrationRequest.Password);
 
             return Created("", registrationRequest);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
+        {
+           var user =  await _userService.LoginAsync(loginRequest);
+           string token =  _tokenHandler.GenerateToken(user);
+
+            return Ok(new 
+            {
+                token
+            });
         }
     }
 }
