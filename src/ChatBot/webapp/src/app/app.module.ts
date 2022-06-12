@@ -1,4 +1,4 @@
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -13,6 +13,8 @@ import { AuthorizeLayoutComponent } from './layouts/authorize-layout/authorize-l
 import { RegisterComponent } from './pages/register/register.component';
 import { LoginComponent } from './pages/login/login.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
+import { TokenInterceptor } from './services/token.interceptor';
+import { CreateOrJoinChatRoomComponent } from './pages/create-or-join-chat-room/create-or-join-chat-room.component';
 
 
 function tokenGetter() {
@@ -27,7 +29,8 @@ function tokenGetter() {
     AuthorizeLayoutComponent,
     RegisterComponent,
     LoginComponent,
-    ChatRoomComponent
+    ChatRoomComponent,
+    CreateOrJoinChatRoomComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +45,9 @@ function tokenGetter() {
       }
     })
   ],
-  providers: [],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

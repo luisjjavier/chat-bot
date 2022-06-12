@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { AccountLayoutComponent } from './layouts/account-layout/account-layout.component';
 import { AuthorizeLayoutComponent } from './layouts/authorize-layout/authorize-layout.component';
 import { ChatRoomComponent } from './pages/chat-room/chat-room.component';
+import { CreateOrJoinChatRoomComponent } from './pages/create-or-join-chat-room/create-or-join-chat-room.component';
 import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AuthGuard } from './services/auth.guard';
@@ -28,9 +29,14 @@ const routes: Routes = [
     component: AuthorizeLayoutComponent,
     children: [
       {
-        path: 'chatroom',
+        path: 'chatroom/:roomCode',
         canActivate: [AuthGuard],
         component: ChatRoomComponent
+      },
+      {
+        path: 'chatroom',
+        canActivate: [AuthGuard],
+        component: CreateOrJoinChatRoomComponent
       }
     ]
   },

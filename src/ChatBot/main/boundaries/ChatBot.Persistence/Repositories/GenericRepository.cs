@@ -4,7 +4,7 @@ using Triplex.Validations;
 
 namespace ChatBot.Persistence.Repositories
 {
-    public sealed class GenericRepository <T>: IRepository<T> where T : class
+    public  class GenericRepository <T>: IRepository<T> where T : class
     {
         private readonly ChatDbContext _chatDbContext;
         private readonly DbSet<T> _dbSet;

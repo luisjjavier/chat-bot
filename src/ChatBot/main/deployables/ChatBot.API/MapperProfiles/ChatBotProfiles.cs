@@ -9,6 +9,7 @@ namespace ChatBot.API.MapperProfiles
         public ChatBotProfiles()
         {
             CreateMap<RegistrationRequest, User>();
+            CreateMap<CreateChatRoomRequest, Room>();
         }
 
     }

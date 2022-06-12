@@ -1,0 +1,17 @@
+<div class="row">
+  <div class="card me-2" style="width: 25rem;">
+    <div class="card-body">
+      <h5 class="card-title">Create a new room</h5>
+    <input type="text" [formControl]="newChatRoomName" placeholder="chat room name" class="form-control form-control-sm">
+    <button (click)="onCreateNewRoom()" class="btn-sm btn btn-primary mt-2">Create a Room</button>
+    </div>
+  </div>
+
+  <div class="card" style="width: 25rem;">
+    <div class="card-body">
+      <h5 class="card-title">Join to existing room</h5>
+    <input type="text" placeholder="chat room code" class="form-control form-control-sm">
+    <button (click)="onJoinToRoom()" class="btn-sm btn btn-primary mt-2">Join to a room</button>
+    </div>
+  </div>
+</div>

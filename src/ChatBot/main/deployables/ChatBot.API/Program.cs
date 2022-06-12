@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using ChatBot.API.ExceptionHandler;
+using ChatBot.API.hubs;
 using ChatBot.API.Models;
 using ChatBot.Core.Boundaries.Persistence;
 using ChatBot.Core.Models;
@@ -29,9 +30,10 @@ namespace ChatBot.API
             builder.Services.AddScoped((_) => jwtSettings);
             // Add services to the container.
             AddDbContext(builder.Services, builder.Configuration);
+            builder.Services.AddControllers();
             RegisterServices(builder.Services);
             RegisterRepositories(builder.Services);
-            ConfigureJwt(builder.Services, jwtSettings);
+
             builder.Services.AddCors(AddDefaultCors(apiSettings));
 
 
@@ -45,9 +47,10 @@ namespace ChatBot.API
                 o.Lockout.DefaultLockoutTimeSpan = new System.TimeSpan(0, 5, 0);
                 o.Lockout.MaxFailedAccessAttempts = 5;
             }).AddEntityFrameworkStores<ChatDbContext>().AddDefaultTokenProviders();
+            ConfigureJwt(builder.Services, jwtSettings);
 
             builder.Services.AddAutoMapper(typeof(Program));
-            builder.Services.AddControllers();
+   
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -88,7 +91,8 @@ namespace ChatBot.API
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
-            
+
+            builder.Services.AddSignalR(opt => { opt.ClientTimeoutInterval = TimeSpan.FromMinutes(60); opt.KeepAliveInterval = TimeSpan.FromMinutes(30); }).AddJsonProtocol();
 
             var app = builder.Build();
 
@@ -101,11 +105,18 @@ namespace ChatBot.API
                 app.UseSwaggerUI();
             }
 
+
             app.UseHttpsRedirection();
+            app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapHub<ChatRoomHub>("/api/chat-room/hub");
+                endpoints.MapControllers();
+            });
+
 
             app.Run();
         }
@@ -148,11 +159,14 @@ namespace ChatBot.API
             
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenHandler, JwtTokenHandler>();
+            services.AddScoped<IChatRoomService, ChatRoomService>();
         }
 
         private static void RegisterRepositories(IServiceCollection services)
         {
             services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IChatRoomRepository, ChatRoomRepository>();
+
         }
         private static void ConfigureJwt(IServiceCollection services, JwtSettings jwtSettings)
         {
@@ -170,7 +184,7 @@ namespace ChatBot.API
                     ValidateIssuerSigningKey = true,
 
                     ValidIssuer = jwtSettings.ValidIssuer,
-                    ValidAudience = jwtSettings.ValidIssuer,
+                    ValidAudience = jwtSettings.ValidAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecurityKey))
                 };
             });
