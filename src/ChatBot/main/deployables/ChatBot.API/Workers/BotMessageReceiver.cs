@@ -31,7 +31,6 @@ namespace ChatBot.API.Workers
                 var content = Encoding.UTF8.GetString(ea.Body.ToArray());
                 var clientMessage = JsonConvert.DeserializeObject<MessageRequest>(content);
 
-                ///TODO : Send chat bot response
                 await _hubContext.Clients.Group(clientMessage.RoomCode)
                     .SendAsync(HubConstants.ON_MSG_RECVD,  clientMessage);
 

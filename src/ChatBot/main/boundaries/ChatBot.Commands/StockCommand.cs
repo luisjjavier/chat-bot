@@ -17,12 +17,20 @@ namespace ChatBot.Commands
         public string Command { get; set; } = "/stock";
         public async Task<MessageRequest> ExecuteCommand(MessageRequest message)
         {
-            return await ExecuteStockCommand(message);
+            try
+            {
+                return await ExecuteStockCommand(message);
+            }
+            catch (Exception e)
+            {
+                throw new FormatException(e.Message);
+            }
+
         }
 
         private async Task<MessageRequest> ExecuteStockCommand(MessageRequest message)
         {
-           var command = message.Message.Split("=");
+            var command = message.Message.Split("=");
             var stockUrl = _serviceConfiguration.ServiceUrl.Replace("{{stock}}", command[1]);
 
             using (var response = await _client.GetAsync(stockUrl))
