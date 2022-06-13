@@ -1,4 +1,5 @@
-﻿using ChatBot.Core.Boundaries.BotMessageHandlers;
+﻿using ChatBot.Commands;
+using ChatBot.Core.Boundaries.BotMessageHandlers;
 using RabbitMqMessageHandler;
 using RabbitMqMessageHandler.Settings;
 

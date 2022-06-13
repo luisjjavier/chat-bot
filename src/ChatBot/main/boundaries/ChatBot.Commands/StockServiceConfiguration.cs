@@ -1,4 +1,4 @@
-﻿namespace RabbitMqMessageHandler.Settings
+﻿namespace ChatBot.Commands
 {
     public class StockServiceConfiguration
     {
