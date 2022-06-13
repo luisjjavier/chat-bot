@@ -43,7 +43,8 @@ namespace ChatBot.API
             builder.Services.AddCors(AddDefaultCors(apiSettings));
 
 
-            builder.Services.AddIdentity<User, IdentityRole>(o => {
+            builder.Services.AddIdentity<User, IdentityRole>(o =>
+            {
                 o.User.RequireUniqueEmail = false;
                 o.Password.RequireDigit = false;
                 o.Password.RequireLowercase = false;
@@ -56,7 +57,7 @@ namespace ChatBot.API
             ConfigureJwt(builder.Services, jwtSettings);
 
             builder.Services.AddAutoMapper(typeof(Program));
-   
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(c =>
@@ -111,7 +112,7 @@ namespace ChatBot.API
                 app.UseSwaggerUI();
             }
 
-
+   
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
@@ -123,7 +124,10 @@ namespace ChatBot.API
                 endpoints.MapControllers();
             });
 
+            var scope = app.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetService<DbContext>();
 
+            dbContext.Database.Migrate();
             app.Run();
         }
 
@@ -144,7 +148,7 @@ namespace ChatBot.API
             };
         }
 
-        private static void AddDbContext( IServiceCollection services, ConfigurationManager configuration)
+        private static void AddDbContext(IServiceCollection services, ConfigurationManager configuration)
         {
             var migrationsAssembly = typeof(ChatDbContext).GetTypeInfo().Assembly.GetName().Name;
             string connectionString = configuration.GetConnectionString(SQL_CONNECTION_STRING);
@@ -160,9 +164,9 @@ namespace ChatBot.API
             services.AddScoped<DbContext, ChatDbContext>();
         }
 
-        private static void RegisterServices(IServiceCollection  services)
+        private static void RegisterServices(IServiceCollection services)
         {
-            
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenHandler, JwtTokenHandler>();
             services.AddScoped<IChatRoomService, ChatRoomService>();
