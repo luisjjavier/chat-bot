@@ -12,7 +12,7 @@ A simple browser-based chat application using .NET. It also have a bot which com
 ---
 
 ## General info
-A simple browser-based chat application using Go. This application allows several users to talk in multiple chatrooms and also to get stock quotes from an API using a specific command.
+A simple browser-based chat application using .NET. It also have a bot which communicate through the chat
 
 ## Features
 * Allow registered users to log in and talk with other users in a chatroom.
