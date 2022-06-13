@@ -3,6 +3,8 @@ using System.Text;
 using ChatBot.API.ExceptionHandler;
 using ChatBot.API.hubs;
 using ChatBot.API.Models;
+using ChatBot.API.Workers;
+using ChatBot.Core.Boundaries.BotMessageHandlers;
 using ChatBot.Core.Boundaries.Persistence;
 using ChatBot.Core.Models;
 using ChatBot.Core.Services;
@@ -15,6 +17,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
+using RabbitMqMessageHandler.Settings;
 
 namespace ChatBot.API
 {
@@ -30,6 +33,9 @@ namespace ChatBot.API
             builder.Services.AddScoped((_) => jwtSettings);
             // Add services to the container.
             AddDbContext(builder.Services, builder.Configuration);
+            var rabbitMqConfiguration = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            builder.Services.AddSingleton((_) => rabbitMqConfiguration);
+
             builder.Services.AddControllers();
             RegisterServices(builder.Services);
             RegisterRepositories(builder.Services);
@@ -160,6 +166,8 @@ namespace ChatBot.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITokenHandler, JwtTokenHandler>();
             services.AddScoped<IChatRoomService, ChatRoomService>();
+            services.AddSingleton<IBotSendMessageHandler, BotSendMessage>();
+            services.AddHostedService<BotMessageReceiver>();
         }
 
         private static void RegisterRepositories(IServiceCollection services)

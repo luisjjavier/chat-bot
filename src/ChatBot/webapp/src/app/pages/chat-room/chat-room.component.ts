@@ -46,6 +46,7 @@ export class ChatRoomComponent implements OnInit {
     this.chatRoomService.getAllMessages(this.chatRoomCode).subscribe({
       next: messages => {
         this.currentMessages.push(...messages)
+        this.chatScrollToBottom();
       }
     })
   }
@@ -77,7 +78,7 @@ export class ChatRoomComponent implements OnInit {
   }
 
   getMessageStyleClassByUserName(userName: string) {
-    if (userName === "#BOT") {
+    if (userName === "#Bot") {
       return "bot";
     } else if (userName === this.currentUserName) {
       return "me";
