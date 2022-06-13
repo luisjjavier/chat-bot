@@ -10,7 +10,7 @@
   <div class="card" style="width: 25rem;">
     <div class="card-body">
       <h5 class="card-title">Join to existing room</h5>
-    <input type="text" placeholder="chat room code" class="form-control form-control-sm">
+    <input type="text" [formControl]="joinChatRoom"  placeholder="chat room code" class="form-control form-control-sm">
     <button (click)="onJoinToRoom()" class="btn-sm btn btn-primary mt-2">Join to a room</button>
     </div>
   </div>

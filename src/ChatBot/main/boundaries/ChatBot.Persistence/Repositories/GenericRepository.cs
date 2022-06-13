@@ -1,4 +1,5 @@
-﻿using ChatBot.Core.Boundaries.Persistence;
+﻿using System.Linq.Expressions;
+using ChatBot.Core.Boundaries.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Triplex.Validations;
 
@@ -54,6 +55,17 @@ namespace ChatBot.Persistence.Repositories
             _chatDbContext.Entry(entity).State = EntityState.Modified;
 
             await _chatDbContext.SaveChangesAsync();
+        }
+
+        public async Task<T> FirstAsNoTracking(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> list = _dbSet.AsNoTracking().AsQueryable();
+
+            foreach (var includeProperty in includeProperties)
+            {
+                list = list.Include(includeProperty);
+            }
+            return await list.FirstOrDefaultAsync();
         }
     }
 }

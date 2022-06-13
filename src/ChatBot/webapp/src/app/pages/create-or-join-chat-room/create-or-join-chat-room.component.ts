@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ChatRoomService } from '../../services/chat-room.service';
 import { NotificationService } from '../../services/notification.service';
 
@@ -11,7 +12,9 @@ import { NotificationService } from '../../services/notification.service';
 export class CreateOrJoinChatRoomComponent implements OnInit {
   newChatRoomName = new FormControl('');
   joinChatRoom = new FormControl('');
-  constructor(private readonly chatRoomService: ChatRoomService, private readonly notificationService: NotificationService) { }
+  constructor(private readonly chatRoomService: ChatRoomService,
+              private readonly notificationService: NotificationService,
+              private readonly router: Router) { }
 
   ngOnInit(): void {
   }
@@ -23,12 +26,17 @@ export class CreateOrJoinChatRoomComponent implements OnInit {
     this.chatRoomService.createChatRoom(this.newChatRoomName.value).subscribe({
       next: async (value: any) => {
         await this.notificationService.showSuccessMessage(`Your chat room code is ${value.code}`);
+        await this.router.navigate(['chatroom', value.code]);
       },
       error: async err => {
         await this.notificationService.showErrorMessage(err.error.error);
       }
     })
   }
-  onJoinToRoom(){
+  async onJoinToRoom(){
+    if (this.joinChatRoom.value.trim() === "") {
+      return;
+    }
+    await this.router.navigate(['chatroom', this.joinChatRoom.value]);
   }
 }
