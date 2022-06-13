@@ -42,6 +42,12 @@ export class ChatRoomComponent implements OnInit {
         this.chatScrollToBottom();
       }
     })
+
+    this.chatRoomService.getAllMessages(this.chatRoomCode).subscribe({
+      next: messages => {
+        this.currentMessages.push(...messages)
+      }
+    })
   }
 
   private chatScrollToBottom() {

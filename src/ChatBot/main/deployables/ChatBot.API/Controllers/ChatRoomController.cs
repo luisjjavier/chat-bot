@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ChatBot.API.Models;
+using ChatBot.Core.Boundaries.Persistence;
 using ChatBot.Core.Models;
 using ChatBot.Core.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
@@ -16,7 +17,8 @@ namespace ChatBot.API.Controllers
         private readonly IChatRoomService _chatRoomService;
         private readonly IMapper _mapper;
 
-        public ChatRoomController(IChatRoomService chatRoomService, IMapper mapper)
+        public ChatRoomController(IChatRoomService chatRoomService, 
+            IMapper mapper)
         {
             _chatRoomService = chatRoomService;
             _mapper = mapper;
@@ -34,6 +36,13 @@ namespace ChatBot.API.Controllers
             {
                 code= chatRoom.Code
             });
+        }
+
+        [HttpGet("{roomCode}/Messages")]
+        public async Task<IActionResult> Messages(Guid roomCode)
+        {
+            var messages = await _chatRoomService.GetChatRoomMessages(roomCode);
+            return Ok(messages);
         }
     }
 }

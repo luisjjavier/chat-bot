@@ -6,5 +6,6 @@ namespace ChatBot.Core.Services.Contracts
     {
         Task CreateNewRoomAsync(Room room);
         Task<string> ProcessMessage(MessageRequest messageRequest);
+        Task<ICollection<MessageRequest>> GetChatRoomMessages(Guid roomCode);
     }
 }

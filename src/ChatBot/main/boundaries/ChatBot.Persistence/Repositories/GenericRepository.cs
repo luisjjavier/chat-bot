@@ -67,5 +67,20 @@ namespace ChatBot.Persistence.Repositories
             }
             return await list.FirstOrDefaultAsync();
         }
+
+        public IQueryable<T> WhereAsNoTracking(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> list = _dbSet.AsQueryable().AsNoTracking();
+
+            foreach (var includeProperty in includeProperties)
+            {
+                list = list.Include(includeProperty);
+            }
+
+            if (predicate is null)
+                return list;
+
+            return list.Where(predicate);
+        }
     }
 }

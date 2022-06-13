@@ -55,4 +55,8 @@ export class ChatRoomService {
   sendNewMessage(message: ClientMessage) {
     return this.hubConnection.invoke("SendMessage", message);
   }
+
+  getAllMessages(roomCode: string) {
+    return this.http.get<ClientMessage[]>(`${this.baseUrl}/chat-room/${roomCode}/messages`)
+  }
 }

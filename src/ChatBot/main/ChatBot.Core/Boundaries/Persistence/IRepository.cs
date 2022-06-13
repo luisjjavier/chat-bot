@@ -18,5 +18,7 @@ namespace ChatBot.Core.Boundaries.Persistence
 
         Task<T> FirstAsNoTracking(Expression<Func<T, bool>> predicate = null,
             params Expression<Func<T, object>>[] includeProperties);
+
+        IQueryable<T> WhereAsNoTracking(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includeProperties);
     }
 }

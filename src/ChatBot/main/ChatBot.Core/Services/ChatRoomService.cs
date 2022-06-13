@@ -36,5 +36,22 @@ namespace ChatBot.Core.Services
 
            return message.RawMessage;
         }
+
+        public async Task<ICollection<MessageRequest>> GetChatRoomMessages(Guid roomCode)
+        {
+            var room = await _chatRoomRepository.FirstAsNoTracking(room => room.Code == roomCode);
+
+           var messages =  _messageRepository.WhereAsNoTracking(message => message.RoomId == room.Id)
+                .OrderBy(x => x.SentTime).Take(50)
+                .Select(x => new MessageRequest
+                {
+                    Message = x.RawMessage,
+                    RoomCode = room.ToString()!,
+                    ClientUserName = x.FromUser,
+                    SentOnUtc = x.SentTime
+                }).ToList();
+
+           return messages;
+        }
     }
 }
