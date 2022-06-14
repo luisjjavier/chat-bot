@@ -7,10 +7,10 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["ChatBot.API/ChatBot.API.csproj", "ChatBot.API/"]
-RUN dotnet restore "ChatBot.API/ChatBot.API.csproj"
+COPY ["ChatBot/main/", "main/"]
+RUN dotnet restore "main/deployables/ChatBot.API/ChatBot.API.csproj"
 COPY . .
-WORKDIR "/src/ChatBot.API"
+WORKDIR "/src/main/deployables/ChatBot.API"
 RUN dotnet build "ChatBot.API.csproj" -c Release -o /app/build
 
 FROM build AS publish

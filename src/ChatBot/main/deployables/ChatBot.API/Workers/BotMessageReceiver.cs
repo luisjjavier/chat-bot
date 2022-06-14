@@ -47,7 +47,8 @@ namespace ChatBot.API.Workers
             {
                 HostName = _rabbitMqConfiguration.HostName,
                 UserName = _rabbitMqConfiguration.UserName,
-                Password = _rabbitMqConfiguration.Password
+                Password = _rabbitMqConfiguration.Password,
+                Port = 5672
             };
 
             _connection = factory.CreateConnection();

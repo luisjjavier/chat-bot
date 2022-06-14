@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  webapi:
+    image: webapi
+    build: 
+      context: ./src
+      dockerfile: ChatBot/main/deployables/ChatBot.API/Dockerfile
+    ports:
+      - 7523:80
+      - 7524:443
+    depends_on:
+      - rabbitmq
+      - dbchatbot 
+  botworker:
+    image: botworker
+    build:
+      context: ./src
+      dockerfile: ChatBot/main/deployables/ChatBot.BotRunner/Dockerfile
+    ports:
+      - 7525:80
+      - 7526:443
+    depends_on:
+      - rabbitmq
+      - dbchatbot  
+  dbchatbot:
+    container_name: dbchatbot
+    image: "mcr.microsoft.com/mssql/server:2019-latest"
+    environment:
+        SA_PASSWORD: "AT8jY5fgkHdWWcz"
+        ACCEPT_EULA: "Y"
+    ports:
+      - 1453:1433
+    volumes:
+      - db-chatbot-data:/var/opt/mssql
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15671:15671"
+    - "15672:15672"
+volumes:
+  db-chatbot-data:

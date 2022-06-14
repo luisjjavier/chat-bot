@@ -50,7 +50,8 @@ namespace RabbitMqMessageHandler
             {
                 HostName = _configuration.HostName,
                 UserName = _configuration.UserName,
-                Password = _configuration.Password
+                Password = _configuration.Password,
+                Port = 5672
             };
 
             _connection = factory.CreateConnection();

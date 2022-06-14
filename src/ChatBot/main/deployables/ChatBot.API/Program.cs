@@ -34,6 +34,7 @@ namespace ChatBot.API
             // Add services to the container.
             AddDbContext(builder.Services, builder.Configuration);
             var rabbitMqConfiguration = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqConfiguration>();
+            Console.WriteLine($"rabbit {rabbitMqConfiguration.HostName}");
             builder.Services.AddSingleton((_) => rabbitMqConfiguration);
 
             builder.Services.AddControllers();

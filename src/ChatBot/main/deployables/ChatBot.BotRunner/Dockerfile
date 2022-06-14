@@ -7,7 +7,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["main/deployables/ChatBot.BotRunner/ChatBot.BotRunner.csproj", "main/deployables/ChatBot.BotRunner/"]
+COPY ["ChatBot/main/", "main/"]
+
 RUN dotnet restore "main/deployables/ChatBot.BotRunner/ChatBot.BotRunner.csproj"
 COPY . .
 WORKDIR "/src/main/deployables/ChatBot.BotRunner"
