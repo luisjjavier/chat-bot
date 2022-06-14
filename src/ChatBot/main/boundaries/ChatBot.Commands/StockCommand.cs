@@ -30,23 +30,31 @@ namespace ChatBot.Commands
 
         private async Task<ClientMessage> ExecuteStockCommand(ClientMessage clientMessage)
         {
-            var command = clientMessage.Message.Split("=");
-            var stockUrl = _serviceConfiguration.ServiceUrl.Replace("{{stock}}", command[1]);
-
-            using (var response = await _client.GetAsync(stockUrl))
-            using (var stream = await response.Content.ReadAsStreamAsync())
-            using (var reader = new StreamReader(stream))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+            try
             {
-                var stock = csv.GetRecords<StockCsv>()
-                    .ToList().FirstOrDefault();
+                var command = clientMessage.Message.Split("=");
+                var stockUrl = _serviceConfiguration.ServiceUrl.Replace("{{stock}}", command[1]);
 
-                var botMessage = $"sorry we could not find the quote for the stock '{command[1]}'";
+                using (var response = await _client.GetAsync(stockUrl))
+                using (var stream = await response.Content.ReadAsStreamAsync())
+                using (var reader = new StreamReader(stream))
+                using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
+                {
+                    var stock = csv.GetRecords<StockCsv>()
+                        .ToList().FirstOrDefault();
 
-                if (stock.Close != "N/D")
-                    botMessage = $"{command[1].ToUpper()} quote is ${stock.Close} per share";
-                return CreateBotMessage(clientMessage, botMessage);
+                    var botMessage = $"sorry we could not find the quote for the stock '{command[1]}'";
+
+                    if (stock.Close != "N/D")
+                        botMessage = $"{command[1].ToUpper()} quote is ${stock.Close} per share";
+                    return CreateBotMessage(clientMessage, botMessage);
+                }
             }
+            catch (Exception)
+            {
+                return CreateBotMessage(clientMessage, $"sorry we could not find the quote :c");
+            }
+         
         }
 
         private ClientMessage CreateBotMessage(ClientMessage clientMessage, string botMessage)

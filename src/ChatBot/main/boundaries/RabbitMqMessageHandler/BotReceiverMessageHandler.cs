@@ -22,7 +22,7 @@ namespace RabbitMqMessageHandler
         {
             var command = clientMessage.Message.Split("=");
 
-            if (_botCommands.ContainsKey(command[0]))
+            if (_botCommands.ContainsKey(command[0]) && command.Length > 1)
             {
                 _sendMessageHandler.SendMessage(await _botCommands[command[0]].ExecuteCommand(clientMessage));
             }
