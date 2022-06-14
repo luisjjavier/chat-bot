@@ -4,6 +4,6 @@ namespace ChatBot.Core.Boundaries.BotMessageHandlers
 {
     public interface IBotReceiverMessageHandler
     {
-        Task HandleMessage(MessageRequest message);
+        Task HandleMessage(ClientMessage clientMessage);
     }
 }

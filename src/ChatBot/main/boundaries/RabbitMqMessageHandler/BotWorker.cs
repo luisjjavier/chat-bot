@@ -32,7 +32,7 @@ namespace RabbitMqMessageHandler
             consumer.Received += (ch, ea) =>
             {
                 var content = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var clientMessage = JsonConvert.DeserializeObject<MessageRequest>(content);
+                var clientMessage = JsonConvert.DeserializeObject<ClientMessage>(content);
 
                 _botReceiverMessageHandler.HandleMessage(clientMessage);
 

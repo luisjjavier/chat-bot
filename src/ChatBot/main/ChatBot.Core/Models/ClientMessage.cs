@@ -1,6 +1,6 @@
 ﻿namespace ChatBot.Core.Models
 {
-    public sealed class MessageRequest
+    public sealed class ClientMessage
     {
         public string ClientUserName { get; set; } = string.Empty;
 

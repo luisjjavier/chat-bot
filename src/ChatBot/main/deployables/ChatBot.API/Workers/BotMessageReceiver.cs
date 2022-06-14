@@ -29,7 +29,7 @@ namespace ChatBot.API.Workers
             consumer.Received += async (ch, ea) =>
             {
                 var content = Encoding.UTF8.GetString(ea.Body.ToArray());
-                var clientMessage = JsonConvert.DeserializeObject<MessageRequest>(content);
+                var clientMessage = JsonConvert.DeserializeObject<ClientMessage>(content);
 
                 await _hubContext.Clients.Group(clientMessage.RoomCode)
                     .SendAsync(HubConstants.ON_MSG_RECVD,  clientMessage);

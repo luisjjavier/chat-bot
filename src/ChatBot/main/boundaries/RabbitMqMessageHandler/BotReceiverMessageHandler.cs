@@ -18,25 +18,25 @@ namespace RabbitMqMessageHandler
             
         }
 
-        public async Task HandleMessage(MessageRequest message)
+        public async Task HandleMessage(ClientMessage clientMessage)
         {
-            var command = message.Message.Split("=");
+            var command = clientMessage.Message.Split("=");
 
             if (_botCommands.ContainsKey(command[0]))
             {
-                _sendMessageHandler.SendMessage(await _botCommands[command[0]].ExecuteCommand(message));
+                _sendMessageHandler.SendMessage(await _botCommands[command[0]].ExecuteCommand(clientMessage));
             }
             else
             {
-                _sendMessageHandler.SendMessage(CreateBotMessage(message, "Sorry I could not understand the command. :c"));
+                _sendMessageHandler.SendMessage(CreateBotMessage(clientMessage, "Sorry I could not understand the command. :c"));
             }
         }
-        private MessageRequest CreateBotMessage(MessageRequest message, string botMessage)
+        private ClientMessage CreateBotMessage(ClientMessage clientMessage, string botMessage)
         {
-            return new MessageRequest
+            return new ClientMessage
             {
                 Message = botMessage,
-                RoomCode = message.RoomCode,
+                RoomCode = clientMessage.RoomCode,
                 ClientUserName = "#Bot",
                 SentOnUtc = DateTimeOffset.UtcNow
             };

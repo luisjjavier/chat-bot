@@ -4,6 +4,6 @@ namespace ChatBot.Core.Boundaries.BotMessageHandlers
 {
     public interface IBotSendMessageHandler
     {
-        void SendMessage(MessageRequest message);
+        void SendMessage(ClientMessage clientMessage);
     }
 }

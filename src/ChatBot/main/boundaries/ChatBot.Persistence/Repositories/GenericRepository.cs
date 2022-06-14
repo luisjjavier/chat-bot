@@ -65,7 +65,7 @@ namespace ChatBot.Persistence.Repositories
             {
                 list = list.Include(includeProperty);
             }
-            return await list.FirstOrDefaultAsync();
+            return await list.FirstOrDefaultAsync(predicate);
         }
 
         public IQueryable<T> WhereAsNoTracking(Expression<Func<T, bool>> predicate = null, params Expression<Func<T, object>>[] includeProperties)

@@ -1,5 +1,7 @@
 ﻿using ChatBot.Core.Models;
 using ChatBot.Core.Services.Contracts;
+using ChatBot.Core.Validations;
+using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Triplex.Validations;
 
@@ -19,6 +21,8 @@ namespace ChatBot.Core.Services
             Arguments.NotNull(user, nameof(user));
             Arguments.NotNull(password, nameof(password));
 
+            var userValidator = new UserValidator();
+            await userValidator.ValidateAndThrowAsync(user);
             var result = await _userManager.CreateAsync(user, password);
 
             if (!result.Succeeded)

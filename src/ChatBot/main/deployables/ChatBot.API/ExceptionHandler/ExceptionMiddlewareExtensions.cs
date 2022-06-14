@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 
 namespace ChatBot.API.ExceptionHandler
@@ -34,7 +35,8 @@ namespace ChatBot.API.ExceptionHandler
                         ArgumentException or
                         ArgumentOutOfRangeException or
                         InvalidOperationException or
-                        FormatException
+                        FormatException or
+                        ValidationException
                         ? contextFeature.Error.Message
                         : SetStatusCodeAndReturnError(out statusCode);
 

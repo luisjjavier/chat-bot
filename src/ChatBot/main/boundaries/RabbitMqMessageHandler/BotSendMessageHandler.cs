@@ -17,14 +17,14 @@ namespace RabbitMqMessageHandler
             _configuration = configuration;
 
         }
-        public void SendMessage(MessageRequest message)
+        public void SendMessage(ClientMessage clientMessage)
         {
             if (ConnectionExists())
             {
                 using var channel = _connection.CreateModel();
                 channel.QueueDeclare(queue: _configuration.ChatQueueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-                var json = JsonConvert.SerializeObject(message);
+                var json = JsonConvert.SerializeObject(clientMessage);
                 var body = Encoding.UTF8.GetBytes(json);
 
                 channel.BasicPublish(exchange: "", routingKey: _configuration.ChatQueueName, basicProperties: null, body: body);

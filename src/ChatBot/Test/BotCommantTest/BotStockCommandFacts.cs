@@ -25,7 +25,7 @@ namespace BotCommandTest
         [TestCase("/stock=CHFRON")]
         public  void With_Valid_Command_Throws_Nothing(string command)
         {
-            MessageRequest messageRequest = new MessageRequest()
+            ClientMessage clientMessage = new ClientMessage()
             {
                 Message = command,
                 RoomCode = Guid.NewGuid().ToString(),
@@ -35,14 +35,14 @@ namespace BotCommandTest
 
             IBotCommand botCommand = new StockCommand(_configuration);
 
-            Assert.That( async () => await botCommand.ExecuteCommand(messageRequest), Throws.Nothing);
+            Assert.That( async () => await botCommand.ExecuteCommand(clientMessage), Throws.Nothing);
         }
 
         [TestCase("/stock=")]
         [TestCase("")]
         public void With_Valid_Command_Returns_StockQuote(string command)
         {
-            MessageRequest messageRequest = new MessageRequest()
+            ClientMessage clientMessage = new ClientMessage()
             {
                 Message = command,
                 RoomCode = Guid.NewGuid().ToString(),
@@ -52,7 +52,7 @@ namespace BotCommandTest
 
             IBotCommand botCommand = new StockCommand(_configuration);
 
-            Assert.ThrowsAsync<FormatException>(() => botCommand.ExecuteCommand(messageRequest));
+            Assert.ThrowsAsync<FormatException>(() => botCommand.ExecuteCommand(clientMessage));
         }
 
 
@@ -60,7 +60,7 @@ namespace BotCommandTest
         [TestCase("/stock=HELLO WORD")]
         public async Task With_Non_Existing_Command_Returns_Opps_Message(string command)
         {
-            MessageRequest messageRequest = new MessageRequest()
+            ClientMessage clientMessage = new ClientMessage()
             {
                 Message = command,
                 RoomCode = Guid.NewGuid().ToString(),
@@ -69,7 +69,7 @@ namespace BotCommandTest
             };
 
             IBotCommand botCommand = new StockCommand(_configuration);
-           var result  = await botCommand.ExecuteCommand(messageRequest);
+           var result  = await botCommand.ExecuteCommand(clientMessage);
 
            Assert.That(result.Message,Contains.Substring("sorry we could not find the quote for the stock"));
 

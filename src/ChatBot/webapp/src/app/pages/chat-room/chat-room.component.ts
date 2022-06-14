@@ -1,6 +1,7 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ClientMessage } from '../../models/client-message';
 import { AuthService } from '../../services/auth.service';
 import { ChatRoomService } from '../../services/chat-room.service';
@@ -10,9 +11,12 @@ import { ChatRoomService } from '../../services/chat-room.service';
   templateUrl: './chat-room.component.html',
   styleUrls: ['./chat-room.component.scss']
 })
-export class ChatRoomComponent implements OnInit {
+export class ChatRoomComponent implements OnInit, OnDestroy {
   currentUserName: string ='';
   @ViewChild('chat', { static: false }) private chatElement!: ElementRef  ;
+
+  subscription: Subscription[] =[];
+
   message = new FormControl('');
 
   currentMessages: ClientMessage[] = [];
@@ -32,16 +36,16 @@ export class ChatRoomComponent implements OnInit {
     await this.chatRoomService.onUserEnrollmentMessage(this.chatRoomCode, this.currentUserName);
     this.chatRoomService.onChatRoomMessageReceived();
 
-    this.chatRoomService.newUserAdded.subscribe({
+    this.subscription.push( this.chatRoomService.newUserAdded.subscribe({
       next: message => this.currentMessages.push(message)
-    })
+    }))
 
-    this.chatRoomService.newMessage.subscribe({
+    this.subscription.push( this.chatRoomService.newMessage.subscribe({
       next: message => {
         this.currentMessages.push(message)
         this.chatScrollToBottom();
       }
-    })
+    }))
 
     this.chatRoomService.getAllMessages(this.chatRoomCode).subscribe({
       next: messages => {
@@ -88,5 +92,9 @@ export class ChatRoomComponent implements OnInit {
       else {
       return "you";
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscription.forEach(value => value.unsubscribe());
   }
 }

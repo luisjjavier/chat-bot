@@ -15,11 +15,11 @@ namespace ChatBot.Commands
 
         }
         public string Command { get; set; } = "/stock";
-        public async Task<MessageRequest> ExecuteCommand(MessageRequest message)
+        public async Task<ClientMessage> ExecuteCommand(ClientMessage clientMessage)
         {
             try
             {
-                return await ExecuteStockCommand(message);
+                return await ExecuteStockCommand(clientMessage);
             }
             catch (Exception e)
             {
@@ -28,9 +28,9 @@ namespace ChatBot.Commands
 
         }
 
-        private async Task<MessageRequest> ExecuteStockCommand(MessageRequest message)
+        private async Task<ClientMessage> ExecuteStockCommand(ClientMessage clientMessage)
         {
-            var command = message.Message.Split("=");
+            var command = clientMessage.Message.Split("=");
             var stockUrl = _serviceConfiguration.ServiceUrl.Replace("{{stock}}", command[1]);
 
             using (var response = await _client.GetAsync(stockUrl))
@@ -45,16 +45,16 @@ namespace ChatBot.Commands
 
                 if (stock.Close != "N/D")
                     botMessage = $"{command[1].ToUpper()} quote is ${stock.Close} per share";
-                return CreateBotMessage(message, botMessage);
+                return CreateBotMessage(clientMessage, botMessage);
             }
         }
 
-        private MessageRequest CreateBotMessage(MessageRequest message, string botMessage)
+        private ClientMessage CreateBotMessage(ClientMessage clientMessage, string botMessage)
         {
-            return new MessageRequest
+            return new ClientMessage
             {
                 Message = botMessage,
-                RoomCode = message.RoomCode,
+                RoomCode = clientMessage.RoomCode,
                 ClientUserName = "#Bot",
                 SentOnUtc = DateTimeOffset.UtcNow
             };

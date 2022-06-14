@@ -5,7 +5,7 @@ namespace ChatBot.Core.Services.Contracts
     public interface IChatRoomService
     {
         Task CreateNewRoomAsync(Room room);
-        Task<string> ProcessMessage(MessageRequest messageRequest);
-        Task<ICollection<MessageRequest>> GetChatRoomMessages(Guid roomCode);
+        Task<string> ProcessMessage(ClientMessage clientMessage);
+        Task<ICollection<ClientMessage>> GetChatRoomMessages(Guid roomCode);
     }
 }

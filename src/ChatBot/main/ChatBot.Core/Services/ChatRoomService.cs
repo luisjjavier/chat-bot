@@ -2,6 +2,8 @@
 using ChatBot.Core.Boundaries.Persistence;
 using ChatBot.Core.Models;
 using ChatBot.Core.Services.Contracts;
+using ChatBot.Core.Validations;
+using FluentValidation;
 
 namespace ChatBot.Core.Services
 {
@@ -21,26 +23,27 @@ namespace ChatBot.Core.Services
         }
         public async Task CreateNewRoomAsync(Room room)
         {
+            RoomValidator roomValidator = new RoomValidator();
+            await roomValidator.ValidateAndThrowAsync(room);
             await _chatRoomRepository.InsertAsync(room);
         }
 
-        public async Task<string> ProcessMessage(MessageRequest messageRequest)
+        public async Task<string> ProcessMessage(ClientMessage clientMessage)
         {
-            if (isBotCommand(messageRequest.Message))
+            if (IsBotCommand(clientMessage.Message))
             {
-                var command = messageRequest.Message.Split("=");
-                _sendMessageHandler.SendMessage(messageRequest);
+                _sendMessageHandler.SendMessage(clientMessage);
 
                 return "FinnBot is processing your message";
             }
 
             var room = await _chatRoomRepository.FirstAsNoTracking(room =>
-                room.Code == new Guid(messageRequest.RoomCode));
+                room.Code == new Guid(clientMessage.RoomCode));
             var message = new Message
             {
-                FromUser = messageRequest.ClientUserName,
-                SentTime = messageRequest.SentOnUtc,
-                RawMessage = messageRequest.Message,
+                FromUser = clientMessage.ClientUserName,
+                SentTime = clientMessage.SentOnUtc,
+                RawMessage = clientMessage.Message,
                 RoomId = room.Id
             };
 
@@ -49,13 +52,13 @@ namespace ChatBot.Core.Services
             return message.RawMessage;
         }
 
-        public async Task<ICollection<MessageRequest>> GetChatRoomMessages(Guid roomCode)
+        public async Task<ICollection<ClientMessage>> GetChatRoomMessages(Guid roomCode)
         {
             var room = await _chatRoomRepository.FirstAsNoTracking(room => room.Code == roomCode);
 
             var messages = _messageRepository.WhereAsNoTracking(message => message.RoomId == room.Id)
                  .OrderBy(x => x.SentTime).Take(50)
-                 .Select(x => new MessageRequest
+                 .Select(x => new ClientMessage
                  {
                      Message = x.RawMessage,
                      RoomCode = room.ToString()!,
@@ -65,7 +68,7 @@ namespace ChatBot.Core.Services
 
             return messages;
         }
-        private bool isBotCommand(string message)
+        private bool IsBotCommand(string message)
         {
             return message.Contains("/");
         }
