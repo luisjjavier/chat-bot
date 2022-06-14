@@ -51,7 +51,11 @@ namespace RabbitMqMessageHandler
                 HostName = _configuration.HostName,
                 UserName = _configuration.UserName,
                 Password = _configuration.Password,
-                Port = 5672
+                Port = 5672,
+                AutomaticRecoveryEnabled = true,
+                TopologyRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
+                ContinuationTimeout = TimeSpan.FromMinutes(5),
             };
 
             _connection = factory.CreateConnection();

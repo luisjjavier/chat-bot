@@ -48,7 +48,11 @@ namespace ChatBot.API.Workers
                 HostName = _rabbitMqConfiguration.HostName,
                 UserName = _rabbitMqConfiguration.UserName,
                 Password = _rabbitMqConfiguration.Password,
-                Port = 5672
+                Port = 5672,
+                AutomaticRecoveryEnabled = true,
+                TopologyRecoveryEnabled = true,
+                NetworkRecoveryInterval = TimeSpan.FromSeconds(5),
+                ContinuationTimeout = TimeSpan.FromMinutes(5),
             };
 
             _connection = factory.CreateConnection();

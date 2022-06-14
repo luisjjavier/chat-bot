@@ -9,6 +9,7 @@ services:
     ports:
       - 7523:80
       - 7524:443
+    restart: on-failure
     depends_on:
       - rabbitmq
       - dbchatbot 
@@ -20,6 +21,7 @@ services:
     ports:
       - 7525:80
       - 7526:443
+    restart: on-failure
     depends_on:
       - rabbitmq
       - dbchatbot  
@@ -33,17 +35,25 @@ services:
       - 1453:1433
     volumes:
       - db-chatbot-data:/var/opt/mssql
-  rabbitmq: # login guest:guest
-    image: rabbitmq:3-management
-    hostname: "rabbitmq"
-    labels:
-      NAME: "rabbitmq"
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    hostname: rabbitmq
+    volumes:
+      - "~/.docker-conf/rabbitmq/data/:/var/lib/rabbitmq/"
+      - "~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq"
     ports:
-    - "4369:4369"
-    - "5671:5671"
-    - "5672:5672"
-    - "25672:25672"
-    - "15671:15671"
-    - "15672:15672"
+      - 5672:5672
+      - 15672:15672
+    expose:
+     - 5672
+     - 15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+        test: [ "CMD", "rabbitmqctl", "status", "-f", "http://localhost:15672"]
+        interval: 5s
+        timeout: 20s
+        retries: 5
 volumes:
   db-chatbot-data:
