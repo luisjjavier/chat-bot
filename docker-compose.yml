@@ -1,6 +1,13 @@
 version: '3.9'
 
 services:
+  webapp:
+    image: webapp
+    build: 
+      context: ./src
+      dockerfile: ChatBot/webapp/Dockerfile
+    ports:
+      - 8888:80
   webapi:
     image: webapi
     build: 
