@@ -7,15 +7,24 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ChatBot.Core.Services
 {
+    /// <summary>
+    /// Represents a JWT token handler
+    /// </summary>
     public sealed class JwtTokenHandler: ITokenHandler
     {
         private readonly JwtSettings _jwtSettings;
 
+
+        /// <summary>
+        /// Creates a new instance of <see cref="JwtTokenHandler"/>
+        /// </summary>
+        /// <param name="jwtSettings"></param>
         public JwtTokenHandler(JwtSettings jwtSettings)
         {
             _jwtSettings = jwtSettings;
 
         }
+
         private SigningCredentials GetSigningCredentials()
         {
             var key = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
@@ -45,6 +54,11 @@ namespace ChatBot.Core.Services
             return tokenOptions;
         }
 
+        /// <summary>
+        /// Generates a token with the given user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public string GenerateToken(User user)
         {
             var signingCredentials = GetSigningCredentials();

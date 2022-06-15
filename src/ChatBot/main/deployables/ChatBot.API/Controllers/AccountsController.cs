@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ChatBot.API.Controllers
 {
+    /// <summary>
+    /// Account controller which manage all accounts request
+    /// </summary>
     [Route("api/accounts")]
     [ApiController]
     public class AccountsController : ControllerBase
@@ -21,6 +24,11 @@ namespace ChatBot.API.Controllers
             _tokenHandler = tokenHandler;
         }
 
+        /// <summary>
+        /// Allows a user to register
+        /// </summary>
+        /// <param name="registrationRequest"></param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegistrationRequest registrationRequest)
         {
@@ -30,6 +38,11 @@ namespace ChatBot.API.Controllers
             return Created("", registrationRequest);
         }
 
+        /// <summary>
+        /// Allow a user to login
+        /// </summary>
+        /// <param name="loginRequest"></param>
+        /// <returns></returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest loginRequest)
         {

@@ -7,6 +7,9 @@ using Triplex.Validations;
 
 namespace ChatBot.Core.Services
 {
+    /// <summary>
+    /// Manage all user requirements
+    /// </summary>
     public sealed class UserService : IUserService
     {
         private readonly UserManager<User> _userManager;
@@ -16,6 +19,13 @@ namespace ChatBot.Core.Services
             _userManager = userManager;
         }
 
+        /// <summary>
+        /// Register a new user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task RegisterAUser(User user, string password)
         {
             Arguments.NotNull(user, nameof(user));
@@ -32,6 +42,11 @@ namespace ChatBot.Core.Services
             }
         }
 
+        /// <summary>
+        /// Starting from a login request, it indicates if a user can login
+        /// </summary>
+        /// <param name="loginRequest"></param>
+        /// <returns></returns>
         public async Task<User> LoginAsync(LoginRequest loginRequest)
         {
             Arguments.NotNull(loginRequest, nameof(loginRequest));
